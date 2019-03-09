@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+    <!-- Posicionado acima do LinearLayout de envio de mensagens -->
+    <ListView
+            android:layout_above="@id/novaMensagemLinearLayout"
+            android:id="@+id/historicoListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    <!-- Alinhado na parte de baixo da tela -->
+    <LinearLayout
+            android:id="@+id/novaMensagemLinearLayout"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
+        <!-- Width em 0sp porque a largura será dada pelos pesos 3/4 para EditText e 1/4 para
+        Button -->
+        <EditText
+                android:id="@+id/mensagemEditText"
+                android:layout_width="0sp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"/>
+        <!--Método para tratar evento de clique enviarMensagem -->
+        <Button
+                android:id="@+id/enviarBt"
+                android:layout_width="0sp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="enviarMensagem"
+                android:text="Enviar"/>
+    </LinearLayout>
+</RelativeLayout>
