@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".TipoUsuarioActivity">
+
+    <TextView android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              app:layout_constraintRight_toRightOf="parent"
+              app:layout_constraintLeft_toLeftOf="parent"
+              android:layout_marginRight="46dp"
+              android:layout_marginLeft="46dp"
+              app:layout_constraintBottom_toTopOf="@+id/btnServidor"
+              app:layout_constraintTop_toTopOf="parent"
+              android:textSize="26sp"
+              android:textAlignment="center"
+              android:gravity="center"
+              android:textStyle="bold"
+              android:text="@string/texto_modo_celular"/>
+
+    <Button app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:id="@+id/btnServidor"
+            android:layout_width="0dp"
+            android:layout_marginRight="72dp"
+            app:layout_constraintVertical_chainStyle="packed"
+            android:layout_marginLeft="72dp"
+            app:layout_constraintBottom_toTopOf="@+id/btnCliente"
+            android:text="@string/texto_servidor"
+            android:layout_height="wrap_content"/>
+
+    <Button android:layout_width="0dp"
+            android:id="@+id/btnCliente"
+            app:layout_constraintTop_toBottomOf="@+id/btnServidor"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="72dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="72dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:text="@string/texto_cliente"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+</android.support.constraint.ConstraintLayout>

@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">BtChatSdmKt</string>
+    <string name="tipo_usuario">Modo</string>
+    <string name="texto_servidor">Servidor</string>
+    <string name="texto_cliente">Cliente</string>
+    <string name="texto_modo_celular">Selecione o modo que seu celular irá usar:</string>
+    <string name="texto_sem_adaptador_bluetooth">Não existe adaptador Bluetooth neste device</string>
+    <string name="texto_procurando_dispositivos">Procurando dispositivos bluetooth</string>
+    <string name="texto_ative_bluetooth">Ative seu bluetooth</string>
+    <string name="texto_bluetooth_necessario">Bluetooth necessário</string>
+    <string name="texto_visibilidade_necessaria">Visibilidade necessária</string>
+    <string name="texto_permissao_localizacao_obrigatoria">É necessário dar permissão antes</string>
+    <string name="texto_dispositivos_encontrados">Dispositivos Encontrados</string>
+    <string name="texto_desconectado">Desconectado</string>
+    <string name="texto_aguardando_conexoes">Aguardando conexões</string>
+    <string name="texto_atualizar">Atualizar</string>
+    <string name="texto_modo_servidor">Modo Servidor</string>
+    <string name="texto_modo_cliente">Modo Cliente</string>
 </resources>

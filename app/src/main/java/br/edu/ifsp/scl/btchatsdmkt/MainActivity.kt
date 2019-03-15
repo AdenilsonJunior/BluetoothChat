@@ -11,12 +11,13 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.PermissionChecker
+import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -32,8 +33,13 @@ import br.edu.ifsp.scl.btchatsdmkt.BluetoothSingleton.adaptadorBt
 import br.edu.ifsp.scl.btchatsdmkt.BluetoothSingleton.outputStream
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
+import java.lang.IllegalArgumentException
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        const val EXTRA_TIPO = "EXTRA_TIPO"
+    }
 
     private var threadServer: ThreadServidor? = null
     private var threadClient: ThreadCliente? = null
@@ -49,9 +55,19 @@ class MainActivity : AppCompatActivity() {
 
     private var progressDialog: ProgressDialog? = null
 
+    private lateinit var tipo: TipoUsuarioActivity.Tipo
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        //Pega o modo que o usuário escolheu
+        tipo = intent.getSerializableExtra(EXTRA_TIPO) as TipoUsuarioActivity.Tipo
+
+        when(tipo){
+            TipoUsuarioActivity.Tipo.SERVIDOR -> setTitle(R.string.texto_modo_servidor)
+            TipoUsuarioActivity.Tipo.CLIENTE -> setTitle(R.string.texto_modo_cliente)
+        }
 
         historyAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1)
         historicoListView.adapter = historyAdapter
@@ -89,10 +105,26 @@ class MainActivity : AppCompatActivity() {
                 val ativaBluetooth = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
                 startActivityForResult(ativaBluetooth, ATIVA_BLUETOOTH)
             }else{
-                iniciarThreadServidor()
+                when(tipo){
+                    TipoUsuarioActivity.Tipo.SERVIDOR -> ativarDescobertaDoServidor()
+                    TipoUsuarioActivity.Tipo.CLIENTE -> procurarDevicesParaParear()
+                }
             }
         } else {
-            toast("Não existe adaptador Bluetooth neste device")
+            toast(getString(R.string.texto_sem_adaptador_bluetooth))
+        }
+    }
+
+    private fun procurarDevicesParaParear() {
+        adaptadorBt = BluetoothAdapter.getDefaultAdapter()
+        btFoundList = mutableListOf()
+
+        if(adaptadorBt?.isEnabled == true){
+            registraReceiver()
+            adaptadorBt?.startDiscovery()
+            exibirAguardeDialog(getString(R.string.texto_procurando_dispositivos), TEMPO_DESCOBERTA_SERVICO_BLUETOOTH)
+        }else{
+            toast(getString(R.string.texto_ative_bluetooth))
         }
     }
 
@@ -101,13 +133,13 @@ class MainActivity : AppCompatActivity() {
         when (requestCode) {
             ATIVA_BLUETOOTH -> {
                 if (resultCode != Activity.RESULT_OK) {
-                    toast("Bluetooth necessário")
+                    toast(getString(R.string.texto_bluetooth_necessario))
                     finish()
                 }
             }
             ATIVA_DESCOBERTA_BLUETOOTH -> {
                 if(resultCode == Activity.RESULT_CANCELED){
-                    toast("Visibilidade necessária")
+                    toast(getString(R.string.texto_visibilidade_necessaria))
                     finish()
                 }else{
                     iniciarThreadServidor()
@@ -155,7 +187,7 @@ class MainActivity : AppCompatActivity() {
             REQUER_PERMISSOES_LOCALIZACAO -> {
                 permissions.forEachIndexed { index, _ ->
                     if (grantResults[index] != PermissionChecker.PERMISSION_GRANTED) {
-                        toast("É necessário dar permissão antes")
+                        toast(getString(R.string.texto_permissao_localizacao_obrigatoria))
                         finish()
                     }
                 }
@@ -165,36 +197,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_modo_aplicativo, menu)
+        menuInflater.inflate(R.menu.menu_atualizar, menu)
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            R.id.modoClienteMenuItem -> {
-                toast("Modo cliente")
-                adaptadorBt = BluetoothAdapter.getDefaultAdapter()
-                btFoundList = mutableListOf()
-
-                if(adaptadorBt?.isEnabled == true){
-                    registraReceiver()
-                    adaptadorBt?.startDiscovery()
-                    exibirAguardeDialog("Procurando dispositivos bluetooth", TEMPO_DESCOBERTA_SERVICO_BLUETOOTH)
-                }else{
-                    toast("Ative seu bluetooth")
-                }
-
-            }
-            R.id.modoServidorMenuItem -> {
-                toast("Modo servidor")
-
-                val descobertaIntent = Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE)
-                descobertaIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, TEMPO_DESCOBERTA_SERVICO_BLUETOOTH)
-                startActivityForResult(descobertaIntent, ATIVA_DESCOBERTA_BLUETOOTH)
-            }
-        }
-
-        return super.onOptionsItemSelected(item)
+    private fun ativarDescobertaDoServidor() {
+        val descobertaIntent = Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE)
+        descobertaIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, TEMPO_DESCOBERTA_SERVICO_BLUETOOTH)
+        startActivityForResult(descobertaIntent, ATIVA_DESCOBERTA_BLUETOOTH)
     }
 
     fun exibirDispositivosEncontrados() {
@@ -205,7 +215,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val escolhaDispositivoDialog = AlertDialog.Builder(this)
-            .setTitle("Dispositivos Encontrados")
+            .setTitle(getString(R.string.texto_dispositivos_encontrados))
             .setSingleChoiceItems(listaNomesBtsEncontrados.toTypedArray(), -1){ dialog, which ->
                 trataSelecaoServidor(dialog, which)
             }.create()
@@ -231,7 +241,7 @@ class MainActivity : AppCompatActivity() {
                 historyAdapter?.notifyDataSetChanged()
             } else {
                 if (msg?.what == MENSAGEM_DESCONEXAO) {
-                    toast("Desconectado")
+                    toast(getString(R.string.texto_desconectado))
                 }
             }
         }
@@ -243,12 +253,26 @@ class MainActivity : AppCompatActivity() {
         registerReceiver(eventBroadcastReceiver, IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED))
     }
 
-    fun desregistraReceiver() = eventBroadcastReceiver?.let { unregisterReceiver(it) }
+    fun desregistraReceiver() {
+        try{
+            eventBroadcastReceiver?.let { unregisterReceiver(it) }
+        }catch (e: IllegalArgumentException){
+            Log.e("Receiver", "Receiver nao registrado: ${e.message}")
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when(tipo){
+            TipoUsuarioActivity.Tipo.CLIENTE -> procurarDevicesParaParear()
+            TipoUsuarioActivity.Tipo.SERVIDOR -> ativarDescobertaDoServidor()
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
     private fun iniciarThreadServidor(){
         paraThreadFilhas()
 
-        exibirAguardeDialog("Aguardando conexões", TEMPO_DESCOBERTA_SERVICO_BLUETOOTH)
+        exibirAguardeDialog(getString(R.string.texto_aguardando_conexoes), TEMPO_DESCOBERTA_SERVICO_BLUETOOTH)
 
         threadServer = ThreadServidor(this)
         threadServer?.iniciar()
