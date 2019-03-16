@@ -16,4 +16,6 @@
     <string name="texto_atualizar">Atualizar</string>
     <string name="texto_modo_servidor">Modo Servidor</string>
     <string name="texto_modo_cliente">Modo Cliente</string>
+    <string name="texto_nome_usuario">Nome de usuário</string>
+    <string name="texto_erro_nome_obrigatorio">Nome obrigatório</string>
 </resources>

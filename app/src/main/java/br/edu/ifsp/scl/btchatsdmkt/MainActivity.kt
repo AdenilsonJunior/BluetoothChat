@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_TIPO = "EXTRA_TIPO"
+        const val EXTRA_NOME = "EXTRA_NOME"
     }
 
     private var threadServer: ThreadServidor? = null
@@ -56,6 +57,7 @@ class MainActivity : AppCompatActivity() {
     private var progressDialog: ProgressDialog? = null
 
     private lateinit var tipo: TipoUsuarioActivity.Tipo
+    private var nomeUsuario: String = "Usuário"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +65,7 @@ class MainActivity : AppCompatActivity() {
 
         //Pega o modo que o usuário escolheu
         tipo = intent.getSerializableExtra(EXTRA_TIPO) as TipoUsuarioActivity.Tipo
+        nomeUsuario = intent.getStringExtra(EXTRA_NOME)
 
         when(tipo){
             TipoUsuarioActivity.Tipo.SERVIDOR -> setTitle(R.string.texto_modo_servidor)
@@ -306,9 +309,10 @@ class MainActivity : AppCompatActivity() {
 
             try {
                 if (outputStream != null) {
-                    outputStream?.writeUTF(mensagem)
+                    val nomeEMensagem = "$nomeUsuario : $mensagem"
+                    outputStream?.writeUTF(nomeEMensagem)
 
-                    historyAdapter?.add("Eu: $mensagem")
+                    historyAdapter?.add(nomeEMensagem)
                     historyAdapter?.notifyDataSetChanged()
                 }
             }catch (ioException: IOException){

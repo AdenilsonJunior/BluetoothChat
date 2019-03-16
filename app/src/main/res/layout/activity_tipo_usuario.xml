@@ -45,4 +45,17 @@
             android:text="@string/texto_cliente"
             app:layout_constraintRight_toRightOf="parent"/>
 
+    <EditText android:layout_width="0dp"
+              android:id="@+id/nomeEdtiText"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintLeft_toLeftOf="parent"
+              app:layout_constraintTop_toBottomOf="@id/btnCliente"
+              android:layout_marginLeft="46dp"
+              android:layout_marginRight="46dp"
+              android:maxLength="20"
+              android:inputType="textPersonName"
+              app:layout_constraintRight_toRightOf="parent"
+              android:layout_height="wrap_content"
+    android:hint="@string/texto_nome_usuario"/>
+
 </android.support.constraint.ConstraintLayout>

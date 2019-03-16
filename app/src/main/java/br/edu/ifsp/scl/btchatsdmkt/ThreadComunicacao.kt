@@ -14,8 +14,6 @@ class ThreadComunicacao(val mainActivity: MainActivity) : Thread() {
 
     override fun run() {
         try {
-            // Recupera o nome do dispositivo remoto
-            var nome = socket!!.remoteDevice.name
             // Recupera uma referência para os InputStream e OutputStream a partir do Socket
             inputStream = DataInputStream(socket!!.inputStream)
             outputStream = DataOutputStream(socket!!.outputStream)
@@ -25,7 +23,7 @@ class ThreadComunicacao(val mainActivity: MainActivity) : Thread() {
                 // Lê o InputStream e armazena numa String
                 mensagem = inputStream?.readUTF()
                 // Aciona o Handler da Tela Principal para mostrar a String recebida no ListView
-                mainActivity.mHandler?.obtainMessage(MENSAGEM_TEXTO, nome + ": " + mensagem)?.sendToTarget()
+                mainActivity.mHandler?.obtainMessage(MENSAGEM_TEXTO, mensagem)?.sendToTarget()
             }
         } catch (e: IOException) {
             /* Em caso de desconexão pede para o Handler da tela principal mostrar um Toast para o
